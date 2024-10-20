@@ -19,7 +19,7 @@ public class Main extends JFrame {
         keypad();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(530, 250);
+        setSize(300, 500);
         setVisible(true);
     }
     void text(){
@@ -38,10 +38,10 @@ public class Main extends JFrame {
     }
     void keypad() {
         JPanel keypadPanel = new JPanel();
-        keypadPanel.setLayout(new GridLayout(5, 5, 3, 3));  // 5x5
+        keypadPanel.setLayout(new GridLayout(6, 4, 3, 3));  // 5x5
 
         String[] buttons = {
-                "Backspace ", " " , " ", "CE", "C", "7", "8", "9", "/", "sqrt", "4", "5", "6", "x", "%", "1", "2", "3", "-", "1/x", "0", "+/-", ".", "+", "="
+                " % ", "CE", "C","<-", "1/x", "power","sqrt", "/", "7", "8", "9", "x", "4", "5", "6", "-",  "1", "2", "3", "+", "+/-", ".", "0", "="
         };
 
         int count;
