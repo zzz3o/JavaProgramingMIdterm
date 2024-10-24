@@ -27,7 +27,7 @@ public class Main extends JFrame {
         // 텍스트 영역의 위 아래에 여백
         JPanel paddedDisplayPanel = new JPanel();
         paddedDisplayPanel.setLayout(new BorderLayout());
-        paddedDisplayPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));  //  여백 추가
+        paddedDisplayPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));  //  여백 추가
 
         // 둥근 모서리의 JTextArea 생성
         JTextArea displayArea = new RoundedTextArea(1, 8);
@@ -46,6 +46,10 @@ public class Main extends JFrame {
     void keypad() {
         JPanel keypadPanel = new JPanel();
         keypadPanel.setLayout(new GridLayout(5, 4, 20, 20)); // 그리드 레이아웃 설정
+
+        // 좌우 여백을 주기 위해 paddingPanel을 사용
+        JPanel paddedKeypadPanel = new JPanel(new BorderLayout());
+        paddedKeypadPanel.setBorder(BorderFactory.createEmptyBorder(0, 30, 30, 30));  // 좌우에 20px의 여백 추가
 
         // 버튼 레이블 설정
         String[] buttons = {
@@ -68,8 +72,12 @@ public class Main extends JFrame {
             keypadPanel.add(button);
         }
 
-        add(keypadPanel, BorderLayout.CENTER);
+        // 패딩된 패널에 키패드 패널을 추가
+        paddedKeypadPanel.add(keypadPanel, BorderLayout.CENTER);
+
+        add(paddedKeypadPanel, BorderLayout.CENTER);
     }
+
 
     public static void main(String[] args) {
         new Main();
@@ -112,7 +120,7 @@ public class Main extends JFrame {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             // 둥근 모서리 그리기
-            Shape rounded = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 20, 20);
+            Shape rounded = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 30, 30);
             g2.setColor(getBackground());
             g2.fill(rounded);
 
@@ -126,7 +134,7 @@ public class Main extends JFrame {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             // 둥근 모서리 테두리 그리기
-            Shape rounded = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 20, 20);
+            Shape rounded = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 30, 30);
             g2.setColor(getForeground());
             g2.draw(rounded);
             g2.dispose();
