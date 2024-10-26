@@ -6,10 +6,9 @@ public class Main extends JFrame {
     private Font pixelFont;
 
     Main() {
-        setTitle("Pixel Calculator");
+        setTitle("Calculator");
 
-        // 네오둠 폰트(또는 유사 픽셀 폰트 사용 가능)
-        pixelFont = new Font("Courier", Font.PLAIN, 25);
+        pixelFont = new Font("neodgm_code", Font.PLAIN, 20);
 
         setLayout(new BorderLayout());
         display();
@@ -30,11 +29,11 @@ public class Main extends JFrame {
         paddedDisplayPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));  //  여백 추가
 
         // 둥근 모서리의 JTextArea 생성
-        JTextArea displayArea = new RoundedTextArea(1, 8);
+        JTextArea displayArea = new RoundedTextArea(4, 8);
         displayArea.setText("0");
-        displayArea.setEditable(false);
-        displayArea.setBackground(new Color(175, 190, 255));
-        displayArea.setForeground(new Color(96, 120, 206));
+        displayArea.setEditable(true);
+        displayArea.setBackground(new Color(219, 219, 219));
+        displayArea.setForeground(new Color(113, 113, 113));
         displayArea.setFont(pixelFont);
         displayArea.setMargin(new Insets(10, 10, 10, 10)); // 내부 여백 추가
 
@@ -45,7 +44,7 @@ public class Main extends JFrame {
 
     void keypad() {
         JPanel keypadPanel = new JPanel();
-        keypadPanel.setLayout(new GridLayout(5, 4, 20, 20)); // 그리드 레이아웃 설정
+        keypadPanel.setLayout(new GridLayout(5, 4, 10, 20)); // 그리드 레이아웃 설정
 
         // 좌우 여백을 주기 위해 paddingPanel을 사용
         JPanel paddedKeypadPanel = new JPanel(new BorderLayout());
@@ -53,9 +52,9 @@ public class Main extends JFrame {
 
         // 버튼 레이블 설정
         String[] buttons = {
-                "C", "+/-", "%", "←", "7", "8", "9", "/",
-                "4", "5", "6", "x", "1", "2", "3", "-",
-                "0", ".", "=", "+"
+                "C", "()", "%", "÷", "7", "8", "9", "X",
+                "4", "5", "6", "-", "1", "2", "3", "+",
+                "+/-", "0", ".", "="
         };
 
         // 버튼 스타일 설정
@@ -79,10 +78,6 @@ public class Main extends JFrame {
     }
 
 
-    public static void main(String[] args) {
-        new Main();
-    }
-
     // 둥근 버튼 클래스
     class RoundedButton extends JButton {
         public RoundedButton(String label) {
@@ -96,7 +91,7 @@ public class Main extends JFrame {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             // 둥근 모서리 그리기
-            Shape rounded = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 20, 20);
+            Shape rounded = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 80, 60);
             g2.setColor(getBackground());
             g2.fill(rounded);
 
@@ -140,4 +135,9 @@ public class Main extends JFrame {
             g2.dispose();
         }
     }
+
+    public static void main(String[] args) {
+        new Main();
+    }
+
 }
