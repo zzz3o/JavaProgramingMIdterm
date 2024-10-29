@@ -18,7 +18,7 @@ public class CalculatorFrame extends JFrame {
         /*@see https://lrl.kr/GLSu
         폰트 설정*/
         try {
-            font = new Font("Courier", Font.PLAIN, 20);
+            font = new Font("Courier", Font.BOLD, 30);
         } catch (Exception e) {
             font = new JLabel().getFont(); // 폰트를 불러오지 못할 경우 기본 폰트 사용
         }
@@ -49,6 +49,7 @@ public class CalculatorFrame extends JFrame {
         displayField.setBackground(new Color(187, 191, 202));
         displayField.setForeground(new Color(232, 232, 232));
         displayField.setFont(font);
+        displayField.setPreferredSize(new Dimension(270, 110));
         displayField.setMargin(new Insets(10, 10, 10, 10)); // 내부 여백 추가
 
         // 커서 초기 위치를 텍스트의 마지막으로 설정
@@ -106,14 +107,13 @@ public class CalculatorFrame extends JFrame {
             // 버튼 색상 변경
             button.setBackground(new Color(73, 84, 100)); // 클릭된 버튼의 색 변경
 
-            // 버튼 클릭 후 100ms 후에 원래 색으로 복원
             Timer timer = new Timer(70, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     button.setBackground(new Color(187, 191, 202)); // 원래 색으로 복원
                 }
             });
-            timer.setRepeats(false); // 단 한번만 실행
+            timer.setRepeats(false);
             timer.start();
 
 
