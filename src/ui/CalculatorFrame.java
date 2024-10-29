@@ -84,12 +84,42 @@ public class CalculatorFrame extends JFrame {
             button.setPreferredSize(new Dimension(50, 50));  // 버튼 크기
             button.setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 0));
 
+            button.addActionListener(new ButtonClickListener(button));
+
             keypadPanel.add(button);
         }
 
         paddedKeypadPanel.add(keypadPanel, BorderLayout.CENTER);
         add(paddedKeypadPanel, BorderLayout.CENTER);
     }
+
+    // 버튼 클릭 이벤트 리스너
+    private class ButtonClickListener implements ActionListener {
+        private JButton button;
+
+        public ButtonClickListener(JButton button) {
+            this.button = button;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // 버튼 색상 변경
+            button.setBackground(new Color(180 , 180, 184)); // 클릭된 버튼의 색 변경
+
+            // 버튼 클릭 후 100ms 후에 원래 색으로 복원
+            Timer timer = new Timer(70, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    button.setBackground(new Color(219, 219, 219)); // 원래 색으로 복원
+                }
+            });
+            timer.setRepeats(false); // 단 한번만 실행
+            timer.start();
+
+
+        }
+    }
+
 
     // 둥근 버튼 클래스
     private class RoundedButton extends JButton {
