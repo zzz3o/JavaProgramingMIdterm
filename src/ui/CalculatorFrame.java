@@ -46,8 +46,8 @@ public class CalculatorFrame extends JFrame {
         JTextField displayField = new RoundedTextField(4, 8);
         displayField.setText("0");
         displayField.setEditable(true);
-        displayField.setBackground(new Color(219, 219, 219));
-        displayField.setForeground(new Color(113, 113, 113));
+        displayField.setBackground(new Color(187, 191, 202));
+        displayField.setForeground(new Color(232, 232, 232));
         displayField.setFont(font);
         displayField.setMargin(new Insets(10, 10, 10, 10)); // 내부 여백 추가
 
@@ -79,10 +79,10 @@ public class CalculatorFrame extends JFrame {
             JButton button = new RoundedButton(text);
             button.setFont(font);
             button.setFocusPainted(false);
-            button.setBackground(new Color(219, 219, 219));  // 배경색 설정
-            button.setForeground(new Color(113, 113, 113));
+            button.setBackground(new Color(187, 191, 202));  // 배경색 설정
+            button.setForeground(new Color(232, 232, 232));
             button.setPreferredSize(new Dimension(50, 50));  // 버튼 크기
-            button.setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 0));
+            button.setBorder(BorderFactory.createLineBorder(new Color(187, 191, 202), 0));
 
             button.addActionListener(new ButtonClickListener(button));
 
@@ -104,13 +104,13 @@ public class CalculatorFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             // 버튼 색상 변경
-            button.setBackground(new Color(180 , 180, 184)); // 클릭된 버튼의 색 변경
+            button.setBackground(new Color(73, 84, 100)); // 클릭된 버튼의 색 변경
 
             // 버튼 클릭 후 100ms 후에 원래 색으로 복원
             Timer timer = new Timer(70, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    button.setBackground(new Color(219, 219, 219)); // 원래 색으로 복원
+                    button.setBackground(new Color(187, 191, 202)); // 원래 색으로 복원
                 }
             });
             timer.setRepeats(false); // 단 한번만 실행
