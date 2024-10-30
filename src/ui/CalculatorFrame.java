@@ -1,6 +1,7 @@
 package ui;
 
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import java.io.IOException;
 public class CalculatorFrame extends JFrame {
 
     private Font font;
+    private JTextField displayField;
 
     public CalculatorFrame() {
         setTitle("계산기");
@@ -43,7 +45,7 @@ public class CalculatorFrame extends JFrame {
         paddedDisplayPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));  // 여백 추가
 
         // 둥근 모서리의 JTextField 생성
-        JTextField displayField = new RoundedTextField(4, 8);
+        displayField = new RoundedTextField(4, 8);
         displayField.setText("0");
         displayField.setEditable(true);
         displayField.setBackground(new Color(187, 191, 202));
@@ -51,9 +53,6 @@ public class CalculatorFrame extends JFrame {
         displayField.setFont(font);
         displayField.setPreferredSize(new Dimension(270, 110));
         displayField.setMargin(new Insets(10, 10, 10, 10)); // 내부 여백 추가
-
-        // 커서 초기 위치를 텍스트의 마지막으로 설정
-        displayField.setCaretPosition(displayField.getText().length());
 
         paddedDisplayPanel.add(displayField, BorderLayout.CENTER);
         displayPanel.add(paddedDisplayPanel, BorderLayout.CENTER);
@@ -69,7 +68,7 @@ public class CalculatorFrame extends JFrame {
         paddedKeypadPanel.setBorder(BorderFactory.createEmptyBorder(0, 30, 30, 30));
 
         String[] buttons = {
-                "C", "()", "%", "÷", "7", "8", "9", "X",
+                "C", "()", "%", "÷", "7", "8", "9", "x",
                 "4", "5", "6", "-", "1", "2", "3", "+",
                 "+/-", "0", ".", "="
         };
@@ -104,6 +103,21 @@ public class CalculatorFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+
+            String buttonText = button.getText();
+
+            // "C" 버튼 클릭 시 텍스트 필드 초기화
+            if (buttonText.equals("C")) {
+                displayField.setText("0");
+            } else if ("0123456789".contains(buttonText) || "+-x÷".contains(buttonText)) {
+                // 숫자 또는 사칙연산 기호를 입력할 경우
+                if (displayField.getText().equals("0")) {
+                    displayField.setText(buttonText); // 0이 있는 경우 새로운 문자로 대체
+                } else {
+                    displayField.setText(displayField.getText() + buttonText); // 기존 텍스트에 추가
+                }
+            }
+
             // 버튼 색상 변경
             button.setBackground(new Color(73, 84, 100)); // 클릭된 버튼의 색 변경
 
@@ -150,6 +164,14 @@ public class CalculatorFrame extends JFrame {
         public RoundedTextField(int rows, int cols) {
             setOpaque(false);
             setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT); // 오른쪽 정렬
+
+            setCaret(new DefaultCaret() {
+                @Override
+                public void setVisible(boolean visible) {
+                    super.setVisible(false); // 커서를 보이지 않게 설정
+                }
+            });
+
         }
 
         @Override
