@@ -103,7 +103,6 @@ public class CalculatorFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
             String buttonText = button.getText();
 
             // "C" 버튼 클릭 시 텍스트 필드 초기화
@@ -114,8 +113,18 @@ public class CalculatorFrame extends JFrame {
                 if (displayField.getText().equals("0")) {
                     displayField.setText(buttonText); // 0이 있는 경우 새로운 문자로 대체
                 } else {
-                    displayField.setText(displayField.getText() + buttonText); // 기존 텍스트에 추가
+                    String currentText = displayField.getText();
+                    // 마지막 문자가 연산자일 경우 연산자를 추가하지 않음
+                    if ("+-X÷".contains(currentText.substring(currentText.length() - 1))) {
+                        displayField.setText(currentText.substring(0, currentText.length() - 1) + buttonText); // 기존 문자 대체
+                    } else {
+                        displayField.setText(currentText + buttonText); // 기존 텍스트에 추가
+                    }
                 }
+            } else if (buttonText.equals("=")) {
+                // "=" 버튼 클릭 시 계산 수행
+                String result = calculate(displayField.getText());
+                displayField.setText(result);
             }
 
             // 버튼 색상 변경
@@ -129,8 +138,79 @@ public class CalculatorFrame extends JFrame {
             });
             timer.setRepeats(false);
             timer.start();
+        }
+    }
 
 
+    // 계산 메서드
+    private String calculate(final String expression) {
+        // 특수 문자를 처리하고 연산자와 숫자를 분리
+        String processedExpression = expression.replace("x", "*").replace("÷", "/");
+        try {
+            double result = new Object() {
+                int pos = -1, ch;
+
+                void nextChar() {
+                    ch = (++pos < processedExpression.length()) ? processedExpression.charAt(pos) : -1;
+                }
+
+                boolean eat(int charToEat) {
+                    while (ch == ' ') nextChar();
+                    if (ch == charToEat) {
+                        nextChar();
+                        return true;
+                    }
+                    return false;
+                }
+
+                double parse() {
+                    nextChar();
+                    double x = parseExpression();
+                    if (pos < processedExpression.length()) throw new RuntimeException("Unexpected: " + (char) ch);
+                    return x;
+                }
+
+                double parseExpression() {
+                    double x = parseTerm();
+                    for (;;) {
+                        if (eat('+')) x += parseTerm(); // addition
+                        else if (eat('-')) x -= parseTerm(); // subtraction
+                        else return x;
+                    }
+                }
+
+                double parseTerm() {
+                    double x = parseFactor();
+                    for (;;) {
+                        if (eat('*')) x *= parseFactor(); // multiplication
+                        else if (eat('/')) x /= parseFactor(); // division
+                        else return x;
+                    }
+                }
+
+                double parseFactor() {
+                    if (eat('+')) return parseFactor(); // unary plus
+                    if (eat('-')) return -parseFactor(); // unary minus
+
+                    double x;
+                    int startPos = this.pos;
+                    if (eat('(')) { // parentheses
+                        x = parseExpression();
+                        eat(')');
+                    } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
+                        while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
+                        x = Double.parseDouble(processedExpression.substring(startPos, this.pos));
+                    } else {
+                        throw new RuntimeException("Unexpected: " + (char) ch);
+                    }
+
+                    if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
+                    return x;
+                }
+            }.parse();
+            return String.valueOf(result);
+        } catch (Exception e) {
+            return "Error";
         }
     }
 
