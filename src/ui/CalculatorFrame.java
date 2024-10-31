@@ -96,6 +96,7 @@ public class CalculatorFrame extends JFrame {
     // 버튼 클릭 이벤트 리스너
     private class ButtonClickListener implements ActionListener {
         private JButton button;
+        private boolean lastInputWasOperator = false; // 마지막 입력이 연산자인지 추적
 
         public ButtonClickListener(JButton button) {
             this.button = button;
@@ -108,24 +109,28 @@ public class CalculatorFrame extends JFrame {
             // "C" 버튼 클릭 시 텍스트 필드 초기화
             if (buttonText.equals("C")) {
                 displayField.setText("0");
-            } else if ("0123456789".contains(buttonText) || "+-x÷".contains(buttonText)) {
-                // 숫자 또는 사칙연산 기호를 입력할 경우
-                if (displayField.getText().equals("0")) {
-                    displayField.setText(buttonText); // 0이 있는 경우 새로운 문자로 대체
+                lastInputWasOperator = false;
+            } else if ("0123456789".contains(buttonText)) {
+                // 숫자를 입력할 경우
+                if (displayField.getText().equals("0") || lastInputWasOperator) {
+                    displayField.setText(buttonText); // 0이 있는 경우 또는 연산자 뒤 새로운 숫자 시작
                 } else {
-                    String currentText = displayField.getText();
-                    // 마지막 문자가 연산자일 경우 연산자를 추가하지 않음
-                    if ("+-X÷".contains(currentText.substring(currentText.length() - 1))) {
-                        displayField.setText(currentText.substring(0, currentText.length() - 1) + buttonText); // 기존 문자 대체
-                    } else {
-                        displayField.setText(currentText + buttonText); // 기존 텍스트에 추가
-                    }
+                    displayField.setText(displayField.getText() + buttonText); // 기존 숫자에 추가
+                }
+                lastInputWasOperator = false;
+            } else if ("+-X÷".contains(buttonText)) {
+                // 연산자를 입력할 경우, 연속 입력 방지
+                if (!lastInputWasOperator) {
+                    displayField.setText(displayField.getText() + buttonText); // 연산자 추가
+                    lastInputWasOperator = true;
                 }
             } else if (buttonText.equals("=")) {
                 // "=" 버튼 클릭 시 계산 수행
                 String result = calculate(displayField.getText());
                 displayField.setText(result);
+                lastInputWasOperator = false; // 계산 후 플래그 초기화
             }
+
 
             // 버튼 색상 변경
             button.setBackground(new Color(73, 84, 100)); // 클릭된 버튼의 색 변경
@@ -173,8 +178,8 @@ public class CalculatorFrame extends JFrame {
                 double parseExpression() {
                     double x = parseTerm();
                     for (;;) {
-                        if (eat('+')) x += parseTerm(); // addition
-                        else if (eat('-')) x -= parseTerm(); // subtraction
+                        if (eat('+')) x += parseTerm();
+                        else if (eat('-')) x -= parseTerm();
                         else return x;
                     }
                 }
@@ -182,8 +187,8 @@ public class CalculatorFrame extends JFrame {
                 double parseTerm() {
                     double x = parseFactor();
                     for (;;) {
-                        if (eat('*')) x *= parseFactor(); // multiplication
-                        else if (eat('/')) x /= parseFactor(); // division
+                        if (eat('*')) x *= parseFactor();
+                        else if (eat('/')) x /= parseFactor();
                         else return x;
                     }
                 }
@@ -194,7 +199,7 @@ public class CalculatorFrame extends JFrame {
 
                     double x;
                     int startPos = this.pos;
-                    if (eat('(')) { // parentheses
+                    if (eat('(')) {
                         x = parseExpression();
                         eat(')');
                     } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
@@ -204,7 +209,7 @@ public class CalculatorFrame extends JFrame {
                         throw new RuntimeException("Unexpected: " + (char) ch);
                     }
 
-                    if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
+                    if (eat('^')) x = Math.pow(x, parseFactor());
                     return x;
                 }
             }.parse();
@@ -228,7 +233,7 @@ public class CalculatorFrame extends JFrame {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
             // 둥근 모서리 그리기
-            Shape rounded = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 80, 60);
+            Shape rounded = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 10, 10);
             g2.setColor(getBackground());
             g2.fill(rounded);
 
@@ -259,7 +264,7 @@ public class CalculatorFrame extends JFrame {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
-            Shape rounded = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 30, 30);
+            Shape rounded = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 10, 10);
             g2.setColor(getBackground());
             g2.fill(rounded);
 
