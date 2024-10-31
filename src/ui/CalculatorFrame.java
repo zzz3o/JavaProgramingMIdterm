@@ -97,6 +97,7 @@ public class CalculatorFrame extends JFrame {
     private class ButtonClickListener implements ActionListener {
         private JButton button;
         private boolean lastInputWasOperator = false; // 마지막 입력이 연산자인지 추적
+        private boolean calculationComplete = false; // 계산이 완료되었는지 추적
 
         public ButtonClickListener(JButton button) {
             this.button = button;
@@ -110,27 +111,37 @@ public class CalculatorFrame extends JFrame {
             if (buttonText.equals("C")) {
                 displayField.setText("0");
                 lastInputWasOperator = false;
+                calculationComplete = false; // 새 계산이 시작됨을 알림
             } else if ("0123456789".contains(buttonText)) {
                 // 숫자를 입력할 경우
-                if (displayField.getText().equals("0") || lastInputWasOperator) {
+                if (displayField.getText().equals("0") || lastInputWasOperator || calculationComplete) {
                     displayField.setText(buttonText); // 0이 있는 경우 또는 연산자 뒤 새로운 숫자 시작
+                    calculationComplete = false; // 새 숫자 입력으로 계산 완료 상태 해제
                 } else {
                     displayField.setText(displayField.getText() + buttonText); // 기존 숫자에 추가
                 }
-                lastInputWasOperator = false;
-            } else if ("+-X÷".contains(buttonText)) {
-                // 연산자를 입력할 경우, 연속 입력 방지
-                if (!lastInputWasOperator) {
-                    displayField.setText(displayField.getText() + buttonText); // 연산자 추가
-                    lastInputWasOperator = true;
+                lastInputWasOperator = false; // 마지막 입력을 숫자로 설정
+            } else if ("+-x÷".contains(buttonText)) {
+                // 연산자를 입력할 경우
+                String operator = buttonText.equals("x") ? "x" : buttonText; // 'x'를 그대로 사용하고 '÷'는 그대로 사용
+                if (lastInputWasOperator) {
+                    // 마지막 입력이 연산자인 경우, 기존 연산자를 대체
+                    String currentText = displayField.getText();
+                    currentText = currentText.substring(0, currentText.length() - 1) + operator;
+                    displayField.setText(currentText); // 연산자 대체
+                } else if (!calculationComplete) {
+                    // 연산자를 추가
+                    displayField.setText(displayField.getText() + operator);
                 }
+                lastInputWasOperator = true; // 마지막 입력을 연산자로 설정
+                calculationComplete = false; // 계산 완료 상태 해제
             } else if (buttonText.equals("=")) {
                 // "=" 버튼 클릭 시 계산 수행
                 String result = calculate(displayField.getText());
                 displayField.setText(result);
                 lastInputWasOperator = false; // 계산 후 플래그 초기화
+                calculationComplete = true; // 계산 완료 상태
             }
-
 
             // 버튼 색상 변경
             button.setBackground(new Color(73, 84, 100)); // 클릭된 버튼의 색 변경
