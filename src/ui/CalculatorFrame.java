@@ -114,24 +114,28 @@ public class CalculatorFrame extends JFrame {
                 calculationComplete = false; // 새 계산이 시작됨을 알림
             } else if ("0123456789".contains(buttonText)) {
                 // 숫자를 입력할 경우
-                if (displayField.getText().equals("0") || lastInputWasOperator || calculationComplete) {
-                    displayField.setText(buttonText); // 0이 있는 경우 또는 연산자 뒤 새로운 숫자 시작
+                if (calculationComplete) {
+                    // 마지막 계산이 완료된 경우
+                    displayField.setText(buttonText); // 새 숫자 입력
                     calculationComplete = false; // 새 숫자 입력으로 계산 완료 상태 해제
+                } else if (displayField.getText().equals("0")) {
+                    displayField.setText(buttonText); // 0이 있는 경우 새로운 숫자로 대체
                 } else {
                     displayField.setText(displayField.getText() + buttonText); // 기존 숫자에 추가
                 }
                 lastInputWasOperator = false; // 마지막 입력을 숫자로 설정
             } else if ("+-x÷".contains(buttonText)) {
                 // 연산자를 입력할 경우
-                String operator = buttonText.equals("x") ? "x" : buttonText; // 'x'를 그대로 사용하고 '÷'는 그대로 사용
                 if (lastInputWasOperator) {
                     // 마지막 입력이 연산자인 경우, 기존 연산자를 대체
                     String currentText = displayField.getText();
-                    currentText = currentText.substring(0, currentText.length() - 1) + operator;
-                    displayField.setText(currentText); // 연산자 대체
-                } else if (!calculationComplete) {
+                    if (currentText.length() > 0) {
+                        currentText = currentText.substring(0, currentText.length() - 1) + buttonText; // 기존 연산자를 대체
+                        displayField.setText(currentText); // 연산자 대체
+                    }
+                } else {
                     // 연산자를 추가
-                    displayField.setText(displayField.getText() + operator);
+                    displayField.setText(displayField.getText() + buttonText);
                 }
                 lastInputWasOperator = true; // 마지막 입력을 연산자로 설정
                 calculationComplete = false; // 계산 완료 상태 해제
@@ -163,7 +167,7 @@ public class CalculatorFrame extends JFrame {
         // 특수 문자를 처리하고 연산자와 숫자를 분리
         String processedExpression = expression.replace("x", "*").replace("÷", "/");
         try {
-            double result = new Object() {
+            int result = new Object() {
                 int pos = -1, ch;
 
                 void nextChar() {
@@ -179,15 +183,15 @@ public class CalculatorFrame extends JFrame {
                     return false;
                 }
 
-                double parse() {
+                int parse() { // 결과를 int로 변경
                     nextChar();
-                    double x = parseExpression();
+                    int x = parseExpression(); // 결과를 int로 가져옴
                     if (pos < processedExpression.length()) throw new RuntimeException("Unexpected: " + (char) ch);
                     return x;
                 }
 
-                double parseExpression() {
-                    double x = parseTerm();
+                int parseExpression() {
+                    int x = parseTerm(); // int로 변경
                     for (;;) {
                         if (eat('+')) x += parseTerm();
                         else if (eat('-')) x -= parseTerm();
@@ -195,33 +199,35 @@ public class CalculatorFrame extends JFrame {
                     }
                 }
 
-                double parseTerm() {
-                    double x = parseFactor();
+                int parseTerm() {
+                    int x = parseFactor(); // int로 변경
                     for (;;) {
-                        if (eat('*')) x *= parseFactor();
-                        else if (eat('/')) x /= parseFactor();
-                        else return x;
+                        if (eat('*')) x *= parseFactor(); // 곱하기는 int로
+                        else if (eat('/')) {
+                            int divisor = parseFactor(); // 나누기에서 나누는 값도 int로
+                            if (divisor == 0) throw new ArithmeticException("Division by zero"); // 0으로 나누기 체크
+                            x /= divisor; // 나누기 결과도 int로
+                        } else return x;
                     }
                 }
 
-                double parseFactor() {
+                int parseFactor() {
                     if (eat('+')) return parseFactor(); // unary plus
                     if (eat('-')) return -parseFactor(); // unary minus
 
-                    double x;
+                    int x;
                     int startPos = this.pos;
                     if (eat('(')) {
                         x = parseExpression();
                         eat(')');
-                    } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
-                        while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
-                        x = Double.parseDouble(processedExpression.substring(startPos, this.pos));
+                    } else if ((ch >= '0' && ch <= '9')) { // numbers (소수점 제거)
+                        while ((ch >= '0' && ch <= '9')) nextChar();
+                        x = Integer.parseInt(processedExpression.substring(startPos, this.pos)); // int로 변환
                     } else {
                         throw new RuntimeException("Unexpected: " + (char) ch);
                     }
 
-                    if (eat('^')) x = Math.pow(x, parseFactor());
-                    return x;
+                    return x; // int로 리턴
                 }
             }.parse();
             return String.valueOf(result);
@@ -229,6 +235,7 @@ public class CalculatorFrame extends JFrame {
             return "Error";
         }
     }
+
 
 
     // 둥근 버튼 클래스
