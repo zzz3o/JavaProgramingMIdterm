@@ -282,7 +282,8 @@ public class CalculatorFrame extends JFrame {
     private class RoundedTextField extends JTextField {
         public RoundedTextField(int rows, int cols) {
             setOpaque(false);
-            setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT); // 오른쪽 정렬
+//            setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT); // 오른쪽 정렬
+            setHorizontalAlignment(JTextField.RIGHT);
 
             setCaret(new DefaultCaret() {
                 @Override
