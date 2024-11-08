@@ -2,6 +2,8 @@
 
 자바프로그래밍2 중간고사 프로젝트
 
+![image](https://github.com/user-attachments/assets/6f468194-64f4-4eeb-9c6a-1867cd42b9dc)
+
 ## 프로젝트 설명
 
 Swing을 사용하여 기본 사칙 연산을 수행하는 간단한 계산기
